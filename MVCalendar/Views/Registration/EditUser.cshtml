@@ -1,0 +1,48 @@
+﻿@model EditUserViewModel
+
+@{
+    ViewBag.Title = "Edit User";
+}
+
+<div class="row">
+    <div class="col-md-4 mx-auto">
+        <h3 class="display-4">Please edit your data</h3>
+
+        <form method="post" asp-controller="Registration" asp-action="EditUser">
+            <div class="form-group">
+                <label for="inputName">Your name</label>
+                <input asp-for="Name" type="text" class="form-control" id="inputName" value="@Model.Name">
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="inputName">Your Lastname</label>
+                <input asp-for="Lastname" type="text" class="form-control" id="inputLastname" value="@Model.Lastname">
+                <span asp-validation-for="@Model.Lastname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="inputPhone">Your phone number</label>
+                <input asp-for="Phone" type="text" class="form-control" id="inputPhone" value="@Model.Phone">
+                <span asp-validation-for="@Model.Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="inputBirthday">Your birthday date</label>
+                <input asp-for="Birthday" type="date" class="form-control" id="inputBirthday" value="@Model.Birthday">
+                <span asp-validation-for="@Model.Birthday" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" asp-for="Email" value="@Model.Email">
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }}

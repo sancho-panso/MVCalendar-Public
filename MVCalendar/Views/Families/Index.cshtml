@@ -1,0 +1,64 @@
+﻿@model IEnumerable<MVCalendar.Domains.Family>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h3 class="display-4">Family groups list</h3>
+
+@if (ViewBag.deletingMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.deletingMessage
+    </div>
+
+}
+
+@if (ViewBag.editingMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.editingMessage
+    </div>
+
+}
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@foreach (var item in Model)
+{
+    var i = 1;
+        <table class="table table-striped table-dark">
+            <thead>
+                <tr>
+                    <th scope="col">Name: @item.Name</th>
+                    <th>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                        <a asp-action="AddMember" asp-route-id="@item.ID">Add Member</a> |
+                        <a asp-action="RemoveMember" asp-route-id="@item.ID">Remove Member</a> |
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    </th>
+                </tr>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var member in item.FamilyMembers)
+                {
+                    
+                    <tr>
+                        <th scope="row">@i</th>
+                        <td>@member.Name</td>
+                        <td>@member.PhoneNumber</td>
+                        <td>@member.Email</td>
+                    </tr>
+                    i = i + 1;
+                }
+                </tbody>
+        </table>
+    }
+   

@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MVCalendar
+@using MVCalendar.Domains
+@inject SignInManager<CalendarUser> SignInManager
+@inject UserManager<CalendarUser> UserManager
+
+@{
+    var name = UserManager.GetUserName(User);
+ 
+}
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="navbar-right">
+        <ul class="nav navbar-nav navbar-right invisible">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle visible" id="dropDownUserMenu"
+                   data-toggle="dropdown" aria-haspopup="true" area-expanded="false">
+                    <img src="/image/Hello.svg" alt="Hello" style="width:200px;" />  @name!
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropDownUserMenu">
+                    <a asp-controller="Registration" asp-action="EditUser"  class="dropdown-item">
+                        <img src="/image/EditAccount.svg" alt="Edit account" class="visible" style="width:200px; margin-top: -50px;"/>
+                    </a>
+                    <a asp-controller="Registration" asp-action="ChangePassword" class="dropdown-item">
+                        <img src="/image/ChangePassword.svg" alt="Change Password" class="visible" style="width:200px;margin-top: -50px;" />
+                    </a>
+                    <a asp-controller="Registration" asp-action="Logout" class="dropdown-item">
+                        <img src="/image/Logout.svg" alt="Logout" class="visible" style="width:200px;margin-top: -50px;" />
+                    </a>
+                </div>
+
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li><a asp-controller="Registration" asp-action="Index">
+                <img src="/image/Register.svg" alt="Link to registration page" style="width:200px;" />
+            </a>
+        </li>
+        <li>
+            <a asp-controller="Registration" asp-action="Login">
+                <img src="/image/Login.svg" alt="Link to login page" style="width:200px;" />
+            </a>
+        </li>
+    </ul>
+}

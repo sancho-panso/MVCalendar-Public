@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MVCalendar</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib//font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/jquery.datetimepicker.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+        <header class="container-flud">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light">
+                <div class="container">
+                    <div class="col-md-12">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                        <img src="/image/Home.svg" alt="Link to Home page" style="width:150px;" />
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">
+                                        <img src="/image/Calendar.svg" alt="Link to Calendar page" style="width: 190px;" />
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Families" asp-action="Index">
+                                        <img src="/image/Family.svg" alt="Link to Family page" style="width: 220px;" />
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="col-md-6 titlecol">
+                                <partial name="_LoginPartial.cshtml" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            </nav>
+        </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted fixed-bottom">
+        <div class="container">
+            &copy; 2020 - MVCalendar
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/lib/fullcalendar/main.min.js"></script>
+    <script type="text/javascript" src="~/js/jquery.datetimepicker.full.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

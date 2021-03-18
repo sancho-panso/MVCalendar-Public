@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCalendar", "MVCalendar\MVCalendar.csproj", "{2A61B3EA-AA42-413C-B4FA-42C44F8EB70E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domains", "Domains", "{CC0B5109-0125-426D-9D96-BE0D851E46E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCalendar.Domains", "MVCalendar.Domains\MVCalendar.Domains.csproj", "{F47D7C60-464B-4693-9D64-AE41EC69823E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{AF8B7ABE-8B29-4BAC-A1F7-385C67753A56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCalendar.Data", "MVCalendar.Data\MVCalendar.Data.csproj", "{C0DC862F-CF2D-447F-B0A1-395AC184289B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D46666EF-69BD-426C-8CF8-0E4E1997268D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MVCalendar.Services", "MVCalendar.Services\MVCalendar.Services.csproj", "{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A61B3EA-AA42-413C-B4FA-42C44F8EB70E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A61B3EA-AA42-413C-B4FA-42C44F8EB70E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A61B3EA-AA42-413C-B4FA-42C44F8EB70E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A61B3EA-AA42-413C-B4FA-42C44F8EB70E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F47D7C60-464B-4693-9D64-AE41EC69823E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F47D7C60-464B-4693-9D64-AE41EC69823E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F47D7C60-464B-4693-9D64-AE41EC69823E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F47D7C60-464B-4693-9D64-AE41EC69823E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0DC862F-CF2D-447F-B0A1-395AC184289B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0DC862F-CF2D-447F-B0A1-395AC184289B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0DC862F-CF2D-447F-B0A1-395AC184289B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0DC862F-CF2D-447F-B0A1-395AC184289B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F47D7C60-464B-4693-9D64-AE41EC69823E} = {CC0B5109-0125-426D-9D96-BE0D851E46E6}
+		{C0DC862F-CF2D-447F-B0A1-395AC184289B} = {AF8B7ABE-8B29-4BAC-A1F7-385C67753A56}
+		{A8547CA5-C1E6-413B-A1EA-61AD45EE1F8E} = {D46666EF-69BD-426C-8CF8-0E4E1997268D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FB88E18-D751-4F04-9DA0-D0783FBCF210}
+	EndGlobalSection
+EndGlobal

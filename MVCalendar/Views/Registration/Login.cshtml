@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+<div class="row">
+    <div class="col-md-4 mx-auto">
+        @if (ViewBag.AuthError != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.AuthError
+            </div>
+        }
+        @if (ViewBag.successMessage != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @ViewBag.successMessage
+            </div>
+        }
+        <h4 class="display-4">Login</h4>
+        <form method="post" asp-controller="Registration" asp-action="Login" asp-route-returnUrl="@ViewData["returnUrl"]" asp-antiforgery="true">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>

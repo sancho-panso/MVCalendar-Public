@@ -1,0 +1,574 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MVCalendar.Domains
+@inject SignInManager<CalendarUser> SignInManager
+@inject UserManager<CalendarUser> UserManager
+@model MVCalendar.Models.FamilyViewModel
+
+@{ var user = await UserManager.GetUserAsync(User);
+                var name = UserManager.GetUserName(User);
+                var userID = UserManager.GetUserId(User);
+                var userIsAdult = await UserManager.IsInRoleAsync(user, "Adult");
+                var age = userIsAdult ? "Adult" : "Kid";
+                ViewBag.Title = "Index_Calendar"; }
+
+@*Container for calendar and its display controls*@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <form asp-controller="Events" asp-action="Index" method="post" class="mx-auto">
+                <label class="form-label">Change family group</label>
+                <div class="input-group">
+                    <select asp-for="SelectedFamily" asp-items="Model.AllFamilies" id="familyFilter" class="form-control"></select>
+                    <button type="submit" class="btn btn-primary">Select</button>
+                </div>
+            </form>
+            <div>
+                <label class="form-label">Chose type of events to display</label>
+                <select class="form-control" aria-label="eventFilter" id="eventFilter">
+                    <option selected value="All">All</option>
+                    <option value="publicEvent">Public</option>
+                    <option value="privateEvent">Private</option>
+                    <option value="parentsOnly">Parents only</option>
+                    <option value="kidsOnly">Kids only</option>
+                </select>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="colorEvents">
+                <label class="form-check-label" for="colorEvents">
+                    Use standard event's color pallete
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="background-color: #bbbbbb; opacity: 0.9">
+        <div class="col-md-12">
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+@*Calendar event modal*@
+
+<div id="myModal" class="modal fade" role="dialog" >
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="eventTitle"></span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="Details">
+                <button id="btnDelete" class="btn btn-primary ">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+                <button id="btnEdit" class="btn btn-primary" style="margin-right:5px;">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <p id="pDetails"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Edit event modal*@
+
+<div id="myModalSave" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><span id="eventTitleSave"></span>Save Event</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" id="DetailsSave">
+                <h5 id="familyTitle"></h5>
+                <form class="col-md-12 form-horizontal" action="/" method="post">
+                    <input type="hidden" id="hdEventID" value="0" />
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" id="txtSubject" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select id="addEventType" class="form-control">
+                            <option value="publicEvent">Public</option>
+                            <option value="privateEvent">Private</option>
+                            <option value="parentsOnly">Parents only</option>
+                            <option value="kidsOnly">Kids only</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="publicReceiverAll">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="publicReceiver">
+                            <label class="form-check-label" for="publicReceiver">
+                                Should all family members receive SMS message?
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="smsReminderGroup">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="sendReminder">
+                            <label class="form-check-label" for="sendReminder">
+                                Would you like to receive SMS reminder  1 hour before event begin?
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>From:</label>
+                        <input type="text" id="txtFrom" value="@name" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>To:</label><br>
+                        <select asp-for="SelectedMember" asp-items="Model.AllMembers" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start</label>
+                        <div class="input-group date" id="dtp1">
+                            <input type="text" id="txtStart" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="checkIsFullDay" checked="checked" /> Is it full day event?</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="endDate" style="display:none">
+                        <label>End</label>
+                        <div class="input-group date" id="dtp1">
+                            <input type="text" id="txtEnd" class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Description</span>
+                        <textarea class="form-control" aria-label="Description" id="txtDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Theme Color</label>
+                        <select id="addThemeColor" class="form-control">
+                            <option value="">Default</option>
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="orange">Orange</option>
+                            <option value="green">Green</option>
+                            <option value="yellow">Yellow</option>
+                            <option value="pink">Pink</option>
+                        </select>
+                    </div>                 
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSave" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-window-close"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="~/css/main.min.css" rel="stylesheet" />
+
+@section Scripts{
+    <script type="text/javascript" src="~/lib/fullcalendar/main.min.js"></script>
+    <script type="text/javascript" src="~/js/moment-with-locales.min.js"></script>
+    <script>
+        //set of initial variables for events array, time formater
+        document.addEventListener('DOMContentLoaded', async function () {
+            let selectedEvent = null;
+            let events = [];
+            let filteredEvents = [];
+            let coloredEvents = [];
+            let timeOptions = {
+                year: 'numeric', month: 'numeric', day: 'numeric',
+                hour: 'numeric', minute: 'numeric',
+                hour12: false,
+                timeZone: 'Europe/Helsinki'
+            };
+        //generate calendar view after api call
+            GenerateCalendar(FilterArray(await FetchEvents()));
+            async function FetchEvents() {
+                events = [];
+                let data = await fetch("/events/getevents")
+                    .then(response => response.json())
+                data.map(item => events.push({
+                    id: item.id,
+                    title: item.subject,
+                    extendedProps: {
+                        description: item.description,
+                        messageFrom: item.messageFrom,
+                        messageTo: item.messageTo,
+                        eventStatus: item.eventStatus,
+                        sendToAll: item.sendToAll,
+                        sendReminder: item.sendReminder,
+                        familyID: item.familyID,
+                        familyName: item.familyName
+                    },
+                    start: item.start,
+                    end: item.end != null ? item.end : null,
+                    color: item.themeColor,
+                    allDay: item.isFullDay
+                }));
+                console.log(events);
+                return events
+            }
+        //function for calendar generation and its events option settings
+            function GenerateCalendar(events) {
+                let calendarEl = document.getElementById('calendar');
+                let calendar = new FullCalendar.Calendar(calendarEl, {
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                    },
+                    initialView: 'timeGridWeek',
+                    firstDay: 1,
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    },
+                    navLinks: true,
+                    businessHours: true,
+                    editable: true,
+                    selectable: true,
+                    events: events,
+                    eventClick: function (callEvent) {
+                        selectedEvent = callEvent
+                        let eventObj = callEvent.event;
+                        $('#myModal #eventTitle').text(eventObj.title);
+                        let $description = $('<div/>');
+                        let family = eventObj.extendedProps.familyName;
+                        $description.append($('<p/>').html('<b>Family group: <b/>' + family));
+                        let start = (new Intl.DateTimeFormat('default', timeOptions).format(eventObj.start));
+                        $description.append($('<p/>').html('<b>Start: </b>'
+                            + start));
+                        if (eventObj.end != null) {
+                            let end = (new Intl.DateTimeFormat('default', timeOptions).format(eventObj.end));
+                            $description.append($('<p/>').html('<b>End: </b>'
+                                + end));
+                        }
+                        $description.append($('<p/>').html('<b>AgeZone: <b/>' + '@age'));
+                        let optList = document.getElementById('SelectedMember');
+                        let msgID = eventObj.extendedProps.messageFrom;
+                        let msgFrom = getOptionText(optList, msgID);
+                        $description.append($('<p/>').html('<b>From: <b/>' + msgFrom));
+                        msgID = eventObj.extendedProps.messageTo;
+                        let msgTo = getOptionText(optList, msgID);
+                        $description.append($('<p/>').html('<b>To: <b/>' + msgTo));
+                        let evnType = eventObj.extendedProps.eventStatus;
+                        $description.append($('<p/>').html('<b>Event Type: <b/>' + evnType));
+                        let desText = eventObj.extendedProps.description != null ? eventObj.extendedProps.description : '';
+                        $description.append($('<p/>').html('<b>Description: <b/>' + desText));
+                        $('#myModal #pDetails').empty().html($description);
+                        $('#myModal').modal();
+                    },
+                    selectable: true,
+                    select: function (info) {
+                        selectedEvent = { event: {} }
+                        selectedEvent.event = {
+                            id: null,
+                            title: '',
+                            extendedProps: {
+                                description: '',
+                                messageFrom: '@userID',
+                                messageTo: '@userID',
+                                eventStatus: 'privateEvent',
+                                sendToAll: false,
+                                sendReminder: true,
+                                familyName:'@Model.Family.Name',
+                                familyID:'@Model.Family.ID'
+                            },
+                            start: info.start,
+                            end: info.end,
+                            allDay: false,
+                            borderColor: ''
+                        };
+                        OpenEditForm();
+                    },
+                    editable: true,
+                    eventDrop: function (info) {
+                        let data = {
+                            ID: info.event.id,
+                            Subject: info.event.title,
+                            Start: convertDateTime(info.event.start),
+                            End: info.event.end != null ? convertDateTime(info.event.end) : null,
+                            Description: info.event.extendedProps.description,
+                            MessageFrom: info.event.extendedProps.messageFrom,
+                            MessageTo: info.event.extendedProps.messageTo,
+                            eventStatus: info.event.extendedProps.eventStatus,
+                            sendReminder: info.event.extendedProps.sendReminder,
+                            sendToAll: info.event.extendedProps.sendToAll,
+                            isFullDay: info.event.allDay,
+                            color: info.themeColor
+
+                        };
+                        SaveEvent(data);
+                    }
+                });
+                calendar.render();
+            }
+            // edit button call
+            $('#btnEdit').click(function () {
+                OpenEditForm();
+            })
+            // delete button api call
+            $('#btnDelete').click(function () {
+                if (selectedEvent != null && confirm('Are you sure?')) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/events/DeleteEvent',
+                        data: { 'eventID': selectedEvent.event.id },
+                        success: async function () {
+                            events = await FetchEvents();
+                            GenerateCalendar(events);
+                            $('#myModal').modal('hide');
+                        },
+                        error: function () {
+                            alert('Failed');
+                        }
+                    })
+                }
+            })
+            //event type option selection call 
+            $("#eventFilter").change(function () {
+                filteredEvents = FilterArray(events);
+                GenerateCalendar(filteredEvents);
+            })
+            //event color checkbox function call
+            $("#colorEvents").change( async function () {
+                if (this.checked) {
+                    coloredEvents = ColorEvents(events);
+                    GenerateCalendar(filteredEvents);
+                } else {
+                    events = [];
+                    events = await FetchEvents();
+                    filteredEvents = FilterArray(events);
+                    GenerateCalendar(filteredEvents);
+                }
+            })
+            //full day event checkbox
+            $('#checkIsFullDay').change(function () {
+                if ($(this).is(':checked')) {
+                    $('#endDate').hide();
+                }
+                else {
+                    $('#endDate').show();
+                }
+            })
+            //show-hide checkbox for public sms for all group members
+            $('#addEventType').change(function () {
+                if ($(this).val()== "publicEvent") {
+                    $('#publicReceiverAll').show();
+                }
+                else {
+                    $('#publicReceiverAll').hide();
+                }
+            })
+            //function on edit modal open
+            function OpenEditForm() {
+                //set initial values
+                if (selectedEvent != null) {
+                    let start = convertDateTime(selectedEvent.event.start);
+                    let end = convertDateTime(selectedEvent.event.end);
+                    $('#familyTitle').text("Family group: " + selectedEvent.event.extendedProps.familyName);
+                    $('#hdEventID').val(selectedEvent.event.id);
+                    $('#txtSubject').val(selectedEvent.event.title);
+                    $('#addEventType').val(selectedEvent.event.extendedProps.eventStatus);
+                    $('#SelectedMember').val(selectedEvent.event.extendedProps.messageTo);
+                    $('#txtStart').val(start);
+                    $('#checkIsFullDay').prop("checked", selectedEvent.event.allDay || false);
+                    $('#checkIsFullDay').change();
+                    $('#txtEnd').val(selectedEvent.event.end != null ? end : '');
+                    $('#txtDescription').val(selectedEvent.event.extendedProps.description != null ?
+                        selectedEvent.event.extendedProps.description : '');
+                    $('#addThemeColor').val(selectedEvent.event.borderColor);
+                    $('#addEventType').val(selectedEvent.event.extendedProps.eventStatus);
+                    $('#publicReceiver').val(selectedEvent.event.extendedProps.sendToAll),
+                    $('#sendReminder').val(selectedEvent.event.extendedProps.sendReminder)
+                }
+                if ($('#addEventType').val() != "publicEvent") { $('#publicReceiverAll').hide(); }
+                $('#myModal').modal('hide');
+                $('#myModalSave').modal();
+            }
+            $('#txtStart').datetimepicker({
+                inline: false,
+                step: 20,
+                dayOfWeekStart: 1
+            });
+            $('#txtEnd').datetimepicker({
+                inline: false,
+                step: 20,
+                dayOfWeekStart: 1
+            });
+            //save function
+            $('#btnSave').click(function () {
+                //frontend validation
+                if ($('#txtSubject').val().trim() == "") {
+                    alert('Subject is required');
+                    return;
+                }
+                if ($('#txtStart').val().trim() == "") {
+                    alert('Start date is required');
+                    return;
+                }
+                if ($('#checkIsFullDay').is(':checked') == false && $('#txtEnd').val().trim() == "") {
+                    alert('End date is required');
+                    return;
+                }
+                else {
+                    let startDate = $('#txtStart').val();
+                    let endDate = $('#txtEnd').val();
+                    if (startDate > endDate) {
+                        alert('Invalid end date');
+                        return
+                    }
+                }
+                if ($('#SelectedMember').val() == null) {
+                    alert('event type is required');
+                }
+                //data generation for api transfer
+                let data = {
+                    ID: $('#hdEventID').val(),
+                    Subject: $('#txtSubject').val().trim(),
+                    Start: $('#txtStart').val().trim(),
+                    End: $('#checkIsFullDay').is(':checked') ? null : $('#txtEnd').val().trim(),
+                    Description: $('#txtDescription').val(),
+                    ThemeColor: $('#addThemeColor').val(),
+                    isFullDay: $('#checkIsFullDay').is(':checked'),
+                    MessageFrom: '@userID',
+                    MessageTo: $('#SelectedMember').val(),
+                    EventStatus: $('#addEventType').val(),
+                    SendToAll: $('#publicReceiver').is(':checked'),
+                    SendReminder: $('#sendReminder').is(':checked'),
+                    FamilyID: selectedEvent.event.extendedProps.familyID,
+                    FamilyName: selectedEvent.event.extendedProps.familyName
+                }
+                SaveEvent(data);
+            })
+            // api call to update existing or save new event
+            function SaveEvent(data) {
+                console.log(data);
+                $.ajax({
+                    type: "POST",
+                    url: '/events/SaveEvent',
+                    data: data,
+                    success: async function () {
+                        if ($('#colorEvents').is(':checked')) {
+                            events = [];
+                            events = await FetchEvents();
+                            filteredEvents = FilterArray(events);
+                            coloredEvents = ColorEvents(filteredEvents)
+                            GenerateCalendar(coloredEvents);
+                        } else {
+                            GenerateCalendar(FilterArray(await FetchEvents()))
+                        }
+                    },
+                    error: async function () {
+                        if ($('#colorEvents').is(':checked')) {
+                            events = [];
+                            events = await FetchEvents();
+                            filteredEvents = FilterArray(events);
+                            coloredEvents = ColorEvents(filteredEvents)
+                            GenerateCalendar(coloredEvents);
+                        } else {
+                            GenerateCalendar(FilterArray(await FetchEvents()))
+                        }
+                    }
+                })
+                $('#myModalSave').modal('hide');
+            }
+            // time string converter
+            function convertDateTime(data) {
+                let date = new Date(data);
+                let year = date.getFullYear();
+                let month = addZero(date.getMonth() + 1);
+                let day = addZero(date.getDate());
+                let hour = addZero(date.getHours());
+                let minute = addZero(date.getMinutes());
+                let dateString = year + '/' + month + '/' + day + ' ' + hour + ':' + minute;
+                return dateString
+            }
+            function addZero(i) {
+                if (i < 10) {
+                    i = "0" + i;
+                }
+                return i;
+            }
+            //get option list text value on given value
+            function getOptionText(opt, value) {
+                for (var i = 0; i < opt.length; i++) {
+                    if (opt.options[i].value == value) {
+                        return opt.options[i].text;
+                    }
+                }
+                return 'User not found';
+            }
+            //event dispay function upon selected option
+            function FilterArray(array) {
+                switch ($('#eventFilter').val()) {
+                    case "publicEvent":
+                        filteredEvents = array.filter(item => item.extendedProps.eventStatus == "publicEvent");
+                        break;
+                    case "privateEvent":
+                        filteredEvents = array.filter(item => item.extendedProps.eventStatus == "privateEvent"
+                                                                && (item.extendedProps.messageFrom == '@userID'
+                                                                || item.extendedProps.messageTo == '@userID'));
+                        break;
+                    case "parentsOnly":
+                        filteredEvents = array.filter(item => item.extendedProps.eventStatus == "parentsOnly" && '@age' == "Adult");
+                        break;
+                    case "kidsOnly":
+                        filteredEvents = array.filter(item => item.extendedProps.eventStatus == "kidsOnly" && '@age' == "Kid");
+                        break;
+                    case "All":
+                        if ('@age' != "Kid") {
+                            filteredEvents = array.filter(item => item.extendedProps.eventStatus != "kidsOnly")
+                                .filter(function (item) {
+                                   if (item.extendedProps.eventStatus == "privateEvent" &&( item.extendedProps.messageTo != '@userID' && item.extendedProps.messageFrom != '@userID')) {
+                                        return false;
+                                   }
+                                   return true;
+                                })
+                        }
+                        else {
+                            filteredEvents = array.filter(item => item.extendedProps.eventStatus != "parentsOnly")
+                                .filter(function (item) {
+                                    if (item.extendedProps.eventStatus == "privateEvent" &&( item.extendedProps.messageTo != '@userID' && item.extendedProps.messageFrom != '@userID')) {
+                                        return false;
+                                    }
+                                    return true;
+                                })
+                        }
+                        break;
+                }
+                return filteredEvents;
+            }
+            //event colorizer
+            function ColorEvents(array) {
+                coloredEvents = array.map(function (event) {
+                    switch (event.extendedProps.eventStatus) {
+                        case "publicEvent":
+                            event.color = "Blue";
+                            break;
+                        case "privateEvent":
+                            event.color = "Red";
+                            break;
+                        case "parentOnly":
+                            event.color = "Orange";
+                            break;
+                        case "kidsOnly":
+                            event.color = "Green";
+                            break
+                    }
+                })
+                return coloredEvents;
+            }
+        });
+    </script>
+
+}

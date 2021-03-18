@@ -1,0 +1,33 @@
+﻿@model MVCalendar.Models.FamilyViewModel
+
+@{
+    ViewData["Title"] = "Add Member";
+}
+
+
+
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <h4 class="display-4">Add member to the family group</h4>
+        <hr />
+        <form asp-action="AddMember">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="@Model.Family.ID" />
+            <div class="form-group">
+                <select asp-for="SelectedUser" asp-items="Model.AllUsers" class="form-control"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add Member" class="btn btn-primary" />
+            </div>
+        </form>
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

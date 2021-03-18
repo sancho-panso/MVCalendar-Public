@@ -1,0 +1,59 @@
+﻿@model MVCalendar.Models.UserViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    <div class="col-md-4 mx-auto">
+        <h3 class="display-4">Registration</h3>
+
+        <form method="post" asp-controller="Registration" asp-action="Register">
+            <div class="form-group">
+                <label for="inputName">Your name</label>
+                <input asp-for="Name" type="text" class="form-control" id="inputName">
+                <span asp-validation-for="@Model.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="inputName">Your Last Name</label>
+                <input asp-for="Lastname" type="text" class="form-control" id="inputLastname">
+                <span asp-validation-for="@Model.Lastname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="inputPhone">Your phone number</label>
+                <input asp-for="Phone" type="text" class="form-control" id="inputPhone" value="+370....">
+                <span asp-validation-for="@Model.Phone" class="text-danger"></span>
+                <p style="color:red";>@ViewBag.ErrorPhoneMessage</p>
+            </div>
+            <div class="form-group">
+                <label for="inputBirthday">Your birthday date</label>
+                <input asp-for="Birthday" type="date" class="form-control" id="inputBirthday">
+                <span asp-validation-for="@Model.Birthday" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" asp-for="Email">
+                <span asp-validation-for="Email" class="text-danger"></span>
+                <p style="color:red;">@ViewBag.ErrorEmailMessage </p>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" asp-for="Password">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword2">Password Confirm</label>
+                <input type="password" class="form-control" id="exampleInputPassword2" asp-for="ConfirmPassword">
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }}

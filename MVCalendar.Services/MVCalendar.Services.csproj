@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MVCalendar.Data\MVCalendar.Data.csproj" />
+    <ProjectReference Include="..\MVCalendar.Domains\MVCalendar.Domains.csproj" />
+  </ItemGroup>
+
+</Project>
